@@ -1,11 +1,12 @@
-name: Minikube Cluster Setup
+name: KinD Cluster Setup
 
 on:
   push:
-  pull_request:
+    branches:
+      - main
 
 jobs:
-  minikube:
+  kind-cluster:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,10 +18,13 @@ jobs:
         with:
           version: latest
 
-      - name: Start Minikube
-        uses: medyagh/setup-minikube@latest
+      - name: Create KinD cluster
+        uses: helm/kind-action@v1
 
-      - name: Check cluster
+      - name: Check cluster info
+        run: kubectl cluster-info
+
+      - name: Get nodes
         run: kubectl get nodes
 
       - name: Deploy nginx
@@ -28,5 +32,5 @@ jobs:
           kubectl create deployment nginx --image=nginx
           kubectl expose deployment nginx --port=80 --type=NodePort
 
-      - name: Verify resources
+      - name: Verify deployment
         run: kubectl get all
