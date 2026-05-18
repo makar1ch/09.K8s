@@ -1,0 +1,36 @@
+name: KinD Cluster Setup
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  kind-cluster:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: latest
+
+      - name: Create KinD cluster
+        uses: helm/kind-action@v1
+
+      - name: Check cluster info
+        run: kubectl cluster-info
+
+      - name: Get nodes
+        run: kubectl get nodes
+
+      - name: Deploy nginx
+        run: |
+          kubectl create deployment nginx --image=nginx
+          kubectl expose deployment nginx --port=80 --type=NodePort
+
+      - name: Verify deployment
+        run: kubectl get all
