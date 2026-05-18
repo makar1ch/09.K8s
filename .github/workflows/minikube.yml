@@ -19,7 +19,7 @@ jobs:
           version: 'latest'
 
       - name: Start Minikube
-        uses: medyagh/setup-minikube@latest
+      uses: medyagh/setup-minikube@latest
 
       - name: Check cluster status
         run: kubectl cluster-info
