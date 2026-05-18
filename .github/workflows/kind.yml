@@ -2,8 +2,6 @@ name: KinD Cluster Setup
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   kind:
