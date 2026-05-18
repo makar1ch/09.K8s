@@ -1,25 +1,36 @@
-name: KinD Setup
+name: Minikube Cluster Setup
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 jobs:
-  kind-cluster:
+  minikube:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup KinD
-        run: |
-          curl -LO https://github.com/kubernetes/minikube/releases/latest/download/minikube-linux-amd64
-          sudo install minikube-linux-amd64 /usr/local/bin/minikube && rm minikube-linux-amd64
-          minikube start --driver=docker
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'latest'
 
-      - name: Cluster info
+      - name: Start Minikube
+        uses: medyagh/setup-minikube@latest
+
+      - name: Check cluster status
+        run: kubectl cluster-info
+
+      - name: Get nodes
+        run: kubectl get nodes
+
+      - name: Deploy test application
         run: |
-          kubectl version
-          kubectl get nodes
+          kubectl create deployment hello-k8s --image=nginx
+          kubectl expose deployment hello-k8s --type=NodePort --port=80
+
+      - name: Verify deployment
+        run: kubectl get all
